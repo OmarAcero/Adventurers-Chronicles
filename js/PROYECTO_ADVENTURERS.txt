@@ -1,0 +1,45 @@
+=== DOCUMENTO DE CONTINUIDAD - ADVENTURERS CHRONICLES ===
+
+PROYECTO: MMORPG 2D top-down estilo Ragnarok Online, en HTML5 + Phaser 3.
+OBJETIVO FINAL: Juego web (sin instalación, solo login y jugar), 
+compatible Android + iPhone (via Capacitor), con monetización futura.
+Desarrollador: exigente, sin experiencia previa en código, usa hosting Hostinger (PHP + MySQL).
+
+VISIÓN COMPLETA:
+- Fantasía medieval, top-down. Empiezas novato y subes de nivel matando monstruos.
+- Creación de personaje: 6 cabellos, 6 colores de cabello, 6 rostros, hombre y mujer.
+- Sistema de Jobs: Novato -> Job 1 -> Job 2 (hasta 2 avances).
+- Skills que se aprenden al subir de nivel (como novato y en cada job).
+- Drops de items, inventario, equipo, mazmorras con monstruos difíciles.
+- Futuro: mascotas, bodas, gremios, crianza, minijuegos, tienda/monetización.
+- Sprites: usará archivos .spr de Ragnarok convertidos a PNG (spritesheets).
+
+ESTRUCTURA DE CARPETAS:
+adventurers-chronicles/
+├── index.html (login - AÚN NO CREADO)
+├── game.html (el juego - LISTO)
+├── css/ (game.css, login.css, ui.css)
+├── js/ (config.js, player.js, skills.js, monsters.js, ui.js, main.js, scenes/MainScene.js)
+├── php/ (config/db.php, auth/, character/, helpers/)
+├── assets/sprites/ (characters, monsters, pets, items)
+└── sql/database.sql
+
+PROGRESO POR RETOS:
+- RETO 1: ✅ Núcleo jugable (mover joystick+teclado, atacar, matar monstruos, XP, subir nivel, HUD). HECHO.
+- RETO 2: ✅ Sistema de skills por nivel (Golpe Feroz nvl2, Cura nvl3, Onda Mágica nvl5), barra MP, cooldowns. HECHO.
+- RETO 3: 🔄 EN CURSO - Meter sprites reales con animación de caminar/atacar 4 direcciones (opción A elegida). 
+  Usando spritesheet PNG de prueba mientras el usuario convierte sus .spr a PNG con GRF Editor.
+- RETO 4: ⏳ PENDIENTE - Login (index.html) + Base de datos MySQL (register.php, login.php, tablas).
+- RETO 5+: ⏳ Inventario/items, jobs, mazmorras, mascotas, multijugador, monetización, Capacitor (app móvil).
+
+DECISIONES TÉCNICAS:
+- Motor: Phaser 3 (CDN).
+- Backend: PHP + MySQL (por hosting Hostinger).
+- Sprites .spr NO se leen directo en Phaser -> hay que convertir a PNG spritesheet.
+- Formato spritesheet: cuadrícula de frames iguales (ej 64x64), filas = direcciones (abajo/izq/der/arriba).
+- Estilo de trabajo: por "retos" incrementales, siempre jugable en cada paso.
+
+SIGUIENTE PASO: Usuario está convirtiendo sus sprites .spr a PNG. 
+Retomar Reto 3 metiendo sus PNGs, luego pasar a Reto 4 (login + MySQL).
+
+=== FIN DEL DOCUMENTO ===

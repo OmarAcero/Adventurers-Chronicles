@@ -2,12 +2,13 @@
 html,body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-family:sans-serif; }
 #game { width:100vw; height:100vh; }
 .hud { position:fixed; top:8px; left:8px; color:#fff; font-size:14px; z-index:10; text-shadow:1px 1px 2px #000; }
+.controlsHint { position:fixed; top:8px; right:8px; color:#fff; font-size:12px; z-index:10; text-shadow:1px 1px 2px #000; }
 .bar { width:160px; height:14px; background:#333; border:2px solid #000; border-radius:6px; margin:3px 0; overflow:hidden; }
 .bar > div { height:100%; transition:width .2s; }
 #hpFill { background:#e74c3c; width:100%; }
 #mpFill { background:#3498db; width:100%; }
 #xpFill { background:#f1c40f; width:0%; }
-#joystick { position:fixed; bottom:30px; left:30px; width:120px; height:120px; background:rgba(255,255,255,.15); border-radius:50%; z-index:10; touch-action:none; }
+#joystick { position:fixed; bottom:30px; left:30px; width:120px; height:120px; background:rgba(255,255,255,.15); border-radius:50%; z-index:10; touch-action:none; user-select:none; }
 #stick { position:absolute; top:35px; left:35px; width:50px; height:50px; background:rgba(255,255,255,.5); border-radius:50%; }
 #atkBtn { position:fixed; bottom:50px; right:40px; width:80px; height:80px; background:rgba(231,76,60,.7); border-radius:50%; color:#fff; font-size:14px; border:3px solid #fff; z-index:10; }
 .skillBtn { position:fixed; width:60px; height:60px; border-radius:50%; color:#fff; font-size:11px; border:3px solid #fff; z-index:10; display:none; }

@@ -2,6 +2,22 @@
 let moveVec = {x:0,y:0};
 let joyActive = false;
 let wantAttack = false, wantSkill = null;
+const pressedKeys = new Set();
+const movementKeys = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space']);
+
+window.addEventListener('keydown', event => {
+  if (movementKeys.has(event.code)) event.preventDefault();
+  pressedKeys.add(event.code);
+}, true);
+
+window.addEventListener('keyup', event => {
+  if (movementKeys.has(event.code)) event.preventDefault();
+  pressedKeys.delete(event.code);
+}, true);
+
+function isPressed(...keys){
+  return keys.some(key => pressedKeys.has(key));
+}
 
 function initUI(){
   const joy = document.getElementById('joystick');
@@ -17,12 +33,19 @@ function initUI(){
   }
   function joyEnd(){ joyActive=false; moveVec={x:0,y:0}; stick.style.transform='translate(0,0)'; }
 
-  joy.addEventListener('touchstart',e=>{joyActive=true; joyMove(e.touches[0].clientX,e.touches[0].clientY);});
-  joy.addEventListener('touchmove',e=>{e.preventDefault(); joyMove(e.touches[0].clientX,e.touches[0].clientY);});
-  joy.addEventListener('touchend',joyEnd);
-  joy.addEventListener('mousedown',e=>{joyActive=true; joyMove(e.clientX,e.clientY);});
-  window.addEventListener('mousemove',e=>{if(joyActive)joyMove(e.clientX,e.clientY);});
-  window.addEventListener('mouseup',()=>{if(joyActive)joyEnd();});
+  joy.addEventListener('pointerdown',e=>{
+    e.preventDefault();
+    joyActive=true;
+    joy.setPointerCapture(e.pointerId);
+    joyMove(e.clientX,e.clientY);
+  });
+  joy.addEventListener('pointermove',e=>{
+    if(!joyActive) return;
+    e.preventDefault();
+    joyMove(e.clientX,e.clientY);
+  });
+  joy.addEventListener('pointerup',joyEnd);
+  joy.addEventListener('pointercancel',joyEnd);
 
   bindBtn('atkBtn', ()=>wantAttack=true);
   bindBtn('skill1', ()=>wantSkill='skill1');

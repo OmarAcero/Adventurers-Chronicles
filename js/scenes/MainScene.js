@@ -2,6 +2,7 @@ class MainScene extends Phaser.Scene {
   constructor(){ super('main'); }
 
   preload(){
+    /* Sprite loading is intentionally disabled during the movement test.
     const s = GAME_CONFIG.sprites.hero;
     if (s.path) {
       // CAMINO REAL: carga tu spritesheet PNG
@@ -12,7 +13,7 @@ class MainScene extends Phaser.Scene {
     } else {
       // CAMINO DE PRUEBA: genera un spritesheet dibujado por código
       this.createTestSpritesheet();
-    }
+    } */
   }
 
   // Genera un "personaje" de prueba con frames para animar (mientras no tengas PNG)
@@ -45,12 +46,12 @@ class MainScene extends Phaser.Scene {
       GAME_CONFIG.tileSize, GAME_CONFIG.tileSize, 0x2e7d32, 1, 0x256428, 0.4).setOrigin(0);
 
     // ====== CREAR ANIMACIONES ======
-    this.createHeroAnimations();
+    // Sprite animations are enabled after the movement test is verified.
 
     // HÉROE como sprite animado
-    this.hero = this.physics.add.sprite(500,500,'hero',0);
-    this.hero.setCollideWorldBounds(true);
-    this.hero.body.setSize(28,30).setOffset(18,20);
+    this.hero = this.add.rectangle(500,500,28,40,0xf5deb3).setStrokeStyle(2,0x1f2937);
+    this.physics.add.existing(this.hero);
+    this.hero.body.setCollideWorldBounds(true);
     this.hero.lastDir = 'down';
 
     this.physics.world.setBounds(0,0,GAME_CONFIG.worldWidth,GAME_CONFIG.worldHeight);
@@ -62,6 +63,20 @@ class MainScene extends Phaser.Scene {
 
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys('W,A,S,D,SPACE,ONE,TWO,THREE');
+    this.input.keyboard.enabled = true;
+    this.input.keyboard.addCapture([
+      Phaser.Input.Keyboard.KeyCodes.UP,
+      Phaser.Input.Keyboard.KeyCodes.DOWN,
+      Phaser.Input.Keyboard.KeyCodes.LEFT,
+      Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    ]);
+    this.game.canvas.setAttribute('tabindex', '0');
+    this.game.canvas.focus();
+    this.moveTarget = null;
+    this.input.on('pointerdown', pointer => {
+      this.moveTarget = { x:pointer.worldX, y:pointer.worldY };
+    });
 
     this.time.addEvent({delay:1000, loop:true, callback:()=>{
       if(player.mp<player.maxMp){ player.mp=Math.min(player.maxMp,player.mp+3); updateHUD(); }
@@ -186,12 +201,26 @@ class MainScene extends Phaser.Scene {
 
   update(){
     let vx=moveVec.x, vy=moveVec.y;
-    if(this.cursors.left.isDown||this.keys.A.isDown) vx=-1;
-    if(this.cursors.right.isDown||this.keys.D.isDown) vx=1;
-    if(this.cursors.up.isDown||this.keys.W.isDown) vy=-1;
-    if(this.cursors.down.isDown||this.keys.S.isDown) vy=1;
+    if(isPressed('ArrowLeft','KeyA') || this.cursors.left.isDown || this.keys.A.isDown) vx=-1;
+    if(isPressed('ArrowRight','KeyD') || this.cursors.right.isDown || this.keys.D.isDown) vx=1;
+    if(isPressed('ArrowUp','KeyW') || this.cursors.up.isDown || this.keys.W.isDown) vy=-1;
+    if(isPressed('ArrowDown','KeyS') || this.cursors.down.isDown || this.keys.S.isDown) vy=1;
+
+    if(vx===0 && vy===0 && this.moveTarget){
+      const dx=this.moveTarget.x-this.hero.x, dy=this.moveTarget.y-this.hero.y;
+      const distance=Math.hypot(dx,dy);
+      if(distance<6){
+        this.moveTarget=null;
+      } else {
+        vx=dx/distance;
+        vy=dy/distance;
+      }
+    } else if(vx!==0 || vy!==0){
+      this.moveTarget=null;
+    }
     const len=Math.hypot(vx,vy)||1;
     this.hero.body.setVelocity(vx/len*player.speed, vy/len*player.speed);
+    document.getElementById('position').textContent = 'Posición: '+Math.round(this.hero.x)+', '+Math.round(this.hero.y);
 
     // ====== ANIMACIÓN SEGÚN MOVIMIENTO ======
     if(vx!==0 || vy!==0){
@@ -201,9 +230,9 @@ class MainScene extends Phaser.Scene {
       } else {
         this.hero.lastDir = vy<0 ? 'up' : 'down';
       }
-      this.hero.anims.play('walk-'+this.hero.lastDir, true);
+      this.hero.setFillStyle(0xf6c453);
     } else {
-      this.hero.anims.stop();
+      this.hero.setFillStyle(0xf5deb3);
     }
 
     if(wantAttack||Phaser.Input.Keyboard.JustDown(this.keys.SPACE)){ this.attack(); wantAttack=false; }

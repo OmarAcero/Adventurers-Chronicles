@@ -14,6 +14,8 @@
   <div>MP <div class="bar"><div id="mpFill"></div></div></div>
   <div>XP <div class="bar"><div id="xpFill"></div></div></div>
   <div id="gold">Oro: 0</div>
+  <div id="username"></div>
+  <button id="logoutBtn" class="hidden">Cerrar sesión</button>
   <div id="position">Posición: 500, 500</div>
 </div>
 <div class="controlsHint">Mover: WASD o flechas · Atacar: Espacio</div>
@@ -32,5 +34,24 @@
 <script src="js/ui.js"></script>
 <script src="js/scenes/MainScene.js"></script>
 <script src="js/main.js"></script>
+<script>
+  // Muestra si hay sesión activa o si se juega como invitado (no bloquea el juego)
+  fetch('php/helpers/check_session.php')
+    .then(r => r.json())
+    .then(data => {
+      const el = document.getElementById('username');
+      const btn = document.getElementById('logoutBtn');
+      el.textContent = data.loggedIn ? 'Sesión: ' + data.username : 'Modo invitado';
+      btn.classList.toggle('hidden', !data.loggedIn);
+    })
+    .catch(() => {
+      document.getElementById('username').textContent = 'Modo invitado';
+    });
+
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await fetch('php/auth/logout.php', { method: 'POST' });
+    window.location.href = 'index.html';
+  });
+</script>
 </body>
 </html>

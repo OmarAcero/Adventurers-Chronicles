@@ -40,3 +40,62 @@ h1 { margin: .75rem 0; }
 }
 
 .play-button:hover { background: #f6c453; }
+
+.tabs {
+  display: flex;
+  gap: .5rem;
+  margin-top: 1.5rem;
+}
+.tab-btn {
+  flex: 1;
+  padding: .6rem;
+  border: 1px solid #5279a7;
+  border-radius: 8px;
+  background: transparent;
+  color: #cbd5e1;
+  cursor: pointer;
+  font-weight: 700;
+}
+.tab-btn.active {
+  background: #315b8f;
+  color: #f8fafc;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  margin-top: 1.2rem;
+}
+.auth-form.hidden { display: none; }
+
+.auth-form input {
+  padding: .7rem .8rem;
+  border-radius: 8px;
+  border: 1px solid #5279a7;
+  background: rgba(255,255,255,.06);
+  color: #f8fafc;
+  font-size: 1rem;
+}
+.auth-form input::placeholder { color: #94a3b8; }
+
+.auth-msg {
+  min-height: 1.2rem;
+  margin: .8rem 0 0;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.divider {
+  margin: 1.2rem 0 .5rem;
+  color: #64748b;
+  font-size: .85rem;
+  text-transform: uppercase;
+}
+
+.guest-button {
+  background: transparent;
+  border: 1px solid #5279a7;
+  color: #f8fafc;
+}
+.guest-button:hover { background: rgba(255,255,255,.08); }

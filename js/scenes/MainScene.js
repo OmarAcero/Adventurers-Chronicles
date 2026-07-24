@@ -2,6 +2,21 @@ class MainScene extends Phaser.Scene {
   constructor(){ super('main'); }
 
   preload(){
+    // DEMO: poses estáticas PNG (sin animación de frames)
+    const hd = GAME_CONFIG.sprites.heroDemo;
+    this.load.image('hero-down', hd.down);
+    this.load.image('hero-left', hd.left);
+    this.load.image('hero-right', hd.right);
+    this.load.image('hero-up', hd.up);
+    const md = GAME_CONFIG.sprites.monsterDemo;
+    this.load.image('slime-png', md.slime);
+    this.load.image('goblin-png', md.goblin);
+
+    // DIAGNÓSTICO: si algún PNG no carga, lo grita en consola con la URL exacta que intentó
+    this.load.on('loaderror', (file) => {
+      console.error('[SPRITE 404] No se pudo cargar:', file.key, '->', file.src);
+    });
+
     /* Sprite loading is intentionally disabled during the movement test.
     const s = GAME_CONFIG.sprites.hero;
     if (s.path) {
@@ -48,10 +63,10 @@ class MainScene extends Phaser.Scene {
     // ====== CREAR ANIMACIONES ======
     // Sprite animations are enabled after the movement test is verified.
 
-    // HÉROE como sprite animado
-    this.hero = this.add.rectangle(500,500,28,40,0xf5deb3).setStrokeStyle(2,0x1f2937);
-    this.physics.add.existing(this.hero);
+    // HÉROE demo: sprite PNG (poses estáticas, sin frames de caminar aún)
+    this.hero = this.physics.add.sprite(500,500,'hero-down');
     this.hero.body.setCollideWorldBounds(true);
+    this.hero.setSize(24,20).setOffset(this.hero.width/2-12, this.hero.height-24);
     this.hero.lastDir = 'down';
 
     this.physics.world.setBounds(0,0,GAME_CONFIG.worldWidth,GAME_CONFIG.worldHeight);
@@ -107,8 +122,10 @@ class MainScene extends Phaser.Scene {
     const t = MONSTER_TYPES.slime;
     const x = Phaser.Math.Between(200,GAME_CONFIG.worldWidth-200);
     const y = Phaser.Math.Between(200,GAME_CONFIG.worldHeight-200);
-    const m = this.add.circle(x,y,t.radius,t.color).setStrokeStyle(2,t.stroke);
-    this.physics.add.existing(m);
+    // DEMO: alterna textura slime/goblin para ver ambos sprites en el mapa
+    const key = Math.random()<0.5 ? 'slime-png' : 'goblin-png';
+    const m = this.physics.add.sprite(x,y,key);
+    m.setSize(t.radius*1.6, t.radius*1.6);
     m.hp=t.hp; m.maxHp=t.hp; m.xpReward=t.xpReward; m.goldReward=t.goldReward;
     this.monsters.add(m); return m;
   }
@@ -230,9 +247,11 @@ class MainScene extends Phaser.Scene {
       } else {
         this.hero.lastDir = vy<0 ? 'up' : 'down';
       }
-      this.hero.setFillStyle(0xf6c453);
+      const newDir = this.hero.lastDir;
+      if(this.hero.texture.key !== 'hero-'+newDir) this.hero.setTexture('hero-'+newDir);
+      this.hero.setTint(0xffe0a0);
     } else {
-      this.hero.setFillStyle(0xf5deb3);
+      this.hero.clearTint();
     }
 
     if(wantAttack||Phaser.Input.Keyboard.JustDown(this.keys.SPACE)){ this.attack(); wantAttack=false; }

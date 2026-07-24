@@ -10,8 +10,104 @@
   <main class="login-card">
     <p class="eyebrow">Adventurers Chronicles</p>
     <h1>Comienza tu aventura</h1>
-    <p class="intro">El inicio de sesión estará disponible cuando el backend esté conectado.</p>
-    <a class="play-button" href="game.html">Jugar como invitado</a>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tabLogin" type="button">Iniciar sesión</button>
+      <button class="tab-btn" id="tabRegister" type="button">Crear cuenta</button>
+    </div>
+
+    <form id="loginForm" class="auth-form">
+      <input type="text" id="loginUser" placeholder="Usuario o correo" autocomplete="username" required>
+      <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password" required>
+      <button type="submit" class="play-button">Entrar</button>
+    </form>
+
+    <form id="registerForm" class="auth-form hidden">
+      <input type="text" id="regUser" placeholder="Usuario (3-20 caracteres)" autocomplete="username" required>
+      <input type="email" id="regEmail" placeholder="Correo" autocomplete="email" required>
+      <input type="password" id="regPass" placeholder="Contraseña (mín. 6 caracteres)" autocomplete="new-password" required>
+      <button type="submit" class="play-button">Crear cuenta</button>
+    </form>
+
+    <p id="authMsg" class="auth-msg"></p>
+
+    <div class="divider">o</div>
+    <a class="play-button guest-button" href="game.html">Jugar como invitado</a>
   </main>
+
+  <script>
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const authMsg = document.getElementById('authMsg');
+
+    function showMsg(text, isError){
+      authMsg.textContent = text;
+      authMsg.style.color = isError ? '#f87171' : '#4ade80';
+    }
+
+    tabLogin.addEventListener('click', () => {
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      authMsg.textContent = '';
+    });
+    tabRegister.addEventListener('click', () => {
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      authMsg.textContent = '';
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showMsg('Entrando...', false);
+      try {
+        const res = await fetch('php/auth/login.php', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            username: document.getElementById('loginUser').value.trim(),
+            password: document.getElementById('loginPass').value
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          window.location.href = 'game.html';
+        } else {
+          showMsg(data.error || 'No se pudo iniciar sesión.', true);
+        }
+      } catch (err) {
+        showMsg('Error de conexión con el servidor.', true);
+      }
+    });
+
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showMsg('Creando cuenta...', false);
+      try {
+        const res = await fetch('php/auth/register.php', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            username: document.getElementById('regUser').value.trim(),
+            email: document.getElementById('regEmail').value.trim(),
+            password: document.getElementById('regPass').value
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          window.location.href = 'game.html';
+        } else {
+          showMsg(data.error || 'No se pudo crear la cuenta.', true);
+        }
+      } catch (err) {
+        showMsg('Error de conexión con el servidor.', true);
+      }
+    });
+  </script>
 </body>
 </html>
